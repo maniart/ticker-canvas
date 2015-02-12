@@ -35,10 +35,7 @@ var ticker = (function(w, d, undefined, _) {
 			'ISIS Devours its own',
 			'UP NEXT: Inside a serial killer\'s playground',
 			'Inside a serial killer\'s playground'
-		];
-
-	// Bootstrapping canvas
-	
+		];	
 	
 	// Title Class
 	function Title(config) {
@@ -88,6 +85,7 @@ var ticker = (function(w, d, undefined, _) {
 			.update(velocity, direction)
 			.draw();
 
+		
 		if(direction === 'down') {
 			if(this.y >= to)  {
 				this.stop(done);
@@ -98,14 +96,11 @@ var ticker = (function(w, d, undefined, _) {
 			} 
 		}	
 		
-
 		return this;
-		
-		
 	};
 
 	Title.prototype.update = function update(velocity, direction) {
-		this.y = direction === 'forward' ? this.y + velocity : this.y - velocity;	
+		this.y = direction === 'up' ? this.y - velocity : this.y + velocity;	
 		return this;
 	};
 
@@ -117,6 +112,8 @@ var ticker = (function(w, d, undefined, _) {
 	function Ticker(config) {
 
 		var self = this;
+		
+		// props
 		this.index = 0;
 	    this.ctx = config.ctx;
 		this.velocity = config.velocity;
@@ -125,22 +122,11 @@ var ticker = (function(w, d, undefined, _) {
 		this.stageHeight = config.stageHeight;
 	    this.itemHeight = config.itemHeight; 
 	    this.items = [];
-	    this.yOffset = -1 * this.itemHeight;
 	   	
 	   	// const 
-	    this.OFF_SCREEN_UP = -20;
-	    this.OFF_SCREEN_DOWN = this.stageHeight + 20;
+	    this.OFF_SCREEN_UP = -1 * this.itemHeight;
+	    this.OFF_SCREEN_DOWN = this.stageHeight + this.itemHeight;
 	    this.VERTICAL_CENTER = 25;
-	    
-
-	    this.getIndex = function getIndex() {
-	        return index;
-	    };
-
-	    this.setIndex = function setIndex(newIndex) {
-	        index = newIndex;
-	        return this;
-	    };
 
 	    _(textCache).each(function(text) {
 	    	self.items.push(Title.create({
@@ -153,9 +139,16 @@ var ticker = (function(w, d, undefined, _) {
 	    	}));	
 	    });
 
-
-
 	}
+
+	Ticker.prototype.setIndex = function setIndex(newIndex) {
+		this.index = newIndex;
+		return this;
+	};
+
+	Ticker.prototype.getIndex = function getIndex() {
+		return this.index;
+	};
 
 	Ticker.prototype.clear = function clear() {
 		var ctx = this.ctx;
@@ -166,18 +159,18 @@ var ticker = (function(w, d, undefined, _) {
 
 	Ticker.prototype.goTo = function goTo(destinationIndex, direction) {
 		var self = this;
-		if(direction === 'up') {
-			this.animate(this.index, this.OFF_SCREEN_UP, 'up', function() {
+		
+		this.
+			animate(this.index, direction === 'up' ? self.OFF_SCREEN_UP : self.OFF_SCREEN_DOWN, direction, function() {
 				self.items[destinationIndex]
-					.move({x:10, y:self.OFF_SCREEN_DOWN})
+					.move({x:10, y: direction === 'up' ? self.OFF_SCREEN_DOWN : self.OFF_SCREEN_UP})
 					.draw()
-					.animate(self.VERTICAL_CENTER, self.velocity, 'up')
-					.setIndex(destinationIndex);
-			});
-		} else {
-
-		}
-			
+					.animate(self.VERTICAL_CENTER, self.velocity, direction);
+					
+			})
+			.setIndex(destinationIndex);
+	
+		return this;
 	};
 
 	Ticker.prototype.animate = function animate(index, to, direction, done) {
@@ -202,13 +195,13 @@ var ticker = (function(w, d, undefined, _) {
 	    return this;
 	};
 
-	Ticker.prototype.next = function next() {
-	    this.goTo(this.getIndex() + 1);
+	Ticker.prototype.next = function next(direction) {
+	    this.goTo(this.getIndex() === this.items.length - 1 ? 0 : this.getIndex() + 1, direction);
 	    return this;
 	};
 
-	Ticker.prototype.prev = function prev() {
-	    this.goTo(this.getIndex() - 1);
+	Ticker.prototype.prev = function prev(direction) {
+	    this.goTo(this.getIndex() === 0 ? this.items.length - 1 : this.getIndex() - 1, direction);
 	    return this;
 	};
 
@@ -237,8 +230,8 @@ var ticker = (function(w, d, undefined, _) {
 			bgColor: 'rgb(235, 235, 235)',
 			stageWidth: W,
 			stageHeight: H,
-			velocity: 1,
-			itemHeight: 40	
+			velocity: 2,
+			itemHeight: 30	
 		});
 
 		update();
