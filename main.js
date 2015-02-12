@@ -97,6 +97,7 @@ var ticker = (function(w, d, undefined, _) {
 				this.stop(done);	
 			} 
 		}	
+		
 
 		return this;
 		
