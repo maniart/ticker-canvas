@@ -171,6 +171,7 @@ var ticker = (function(w, d, undefined, _) {
 					.move({x:10, y:self.OFF_SCREEN_DOWN})
 					.draw()
 					.animate(self.VERTICAL_CENTER, self.velocity, 'up');
+				self.index = destinationIndex;
 			});
 		} else {
 
@@ -230,7 +231,6 @@ var ticker = (function(w, d, undefined, _) {
 	function init() {
 		console.log('Initializing');
 		clear();
-		
 		w.ticker = Ticker.create({
 			ctx: ctx,
 			bgColor: 'rgb(235, 235, 235)',
